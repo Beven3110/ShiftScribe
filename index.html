@@ -1,0 +1,689 @@
+<!DOCTYPE html>
+<html lang="en-AU">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
+<meta name="theme-color" content="#0f766e" />
+<title>ShiftScribe – Support work notes</title>
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 48 48'%3E%3Crect width='48' height='48' rx='12' fill='%230f766e'/%3E%3Cpath d='M14 12h20a4 4 0 0 1 4 4v13a4 4 0 0 1-4 4H25l-7 6v-6h-4a4 4 0 0 1-4-4V16a4 4 0 0 1 4-4z' fill='%23fff'/%3E%3Cpath d='M18 23l4.5 4.5L31 19' fill='none' stroke='%230f766e' stroke-width='3' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E" />
+<style>
+:root{
+--bg:#f1f7f6;--card:#fff;--ink:#14211f;--muted:#566763;--line:#dce4e2;--soft:#eaf3f2;
+--accent:#0f766e;--accent-d:#0b5f58;--accent-t:#0f766e;
+--req:#b42318;--req-bg:#fdeceb;--opt:#8a5a00;--opt-bg:#fff4d6;--chk:#1d5fa8;--chk-bg:#e7f0fb;
+--c-teal:#0f766e;--c-violet:#7c3aed;--c-coral:#f0603a;--c-amber:#f5a524;--c-sky:#0ea5e9;--c-pink:#e11d74;
+--t-teal:#e3f5f2;--t-violet:#f0e9fe;--t-coral:#fde9e2;--t-amber:#fff2d4;--t-sky:#e1f3fd;--t-pink:#fde4ef;
+--sans:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Inter,Helvetica,Arial,sans-serif}
+@media (prefers-color-scheme:dark){:root{
+--bg:#0e1514;--card:#172120;--ink:#e6efed;--muted:#9bafab;--line:#26332f;--soft:#1e2b29;
+--accent:#0d7f76;--accent-d:#12958a;--accent-t:#5eead4;
+--req:#f2928b;--req-bg:#3a1f1d;--opt:#f0c35c;--opt-bg:#3a2f12;--chk:#8fc1f2;--chk-bg:#18283a;
+--c-teal:#2dd4bf;--c-violet:#a78bfa;--c-coral:#fb8b68;--c-amber:#fbbf4a;--c-sky:#5cc4f5;--c-pink:#f472b6;
+--t-teal:#13302d;--t-violet:#271f40;--t-coral:#3a2119;--t-amber:#3a2f12;--t-sky:#14293a;--t-pink:#3a1a2a}}
+*{box-sizing:border-box}
+html{-webkit-text-size-adjust:100%}
+body{margin:0;font-family:var(--sans);background:var(--bg);color:var(--ink);-webkit-font-smoothing:antialiased;line-height:1.5;padding-bottom:env(safe-area-inset-bottom)}
+
+/* Header */
+header{position:sticky;top:0;z-index:10;display:flex;align-items:center;justify-content:space-between;gap:10px;
+padding:calc(10px + env(safe-area-inset-top)) max(16px,env(safe-area-inset-right)) 10px max(16px,env(safe-area-inset-left));
+background:var(--card);border-bottom:1px solid var(--line)}
+.brand{display:flex;align-items:center;gap:10px;text-decoration:none;color:var(--ink)}
+.brand svg{width:36px;height:36px;flex:none}
+.brand span{font-size:20px;font-weight:700;letter-spacing:-.3px}
+.badge{font-size:13px;color:var(--muted)}
+@media (max-width:480px){.badge{display:none}}
+
+main{max-width:760px;margin:0 auto;padding:16px 16px 8px}
+
+/* Hero */
+.hero{display:flex;align-items:center;gap:18px;flex-wrap:wrap;border-radius:22px;padding:26px 22px;margin:4px 0 20px;color:#fff;background:linear-gradient(135deg,#0f766e,#0b5f58)}
+.hero-text{flex:1 1 280px}
+.hero-art{flex:0 1 220px;width:220px;max-width:100%;margin:0 auto}
+.hi{display:inline-block;margin:0 0 12px;padding:6px 14px;border-radius:99px;background:rgba(255,255,255,.18);font-size:14px;font-weight:600}
+.hero h1{font-size:clamp(25px,6.4vw,34px);line-height:1.2;letter-spacing:-.5px;margin:0 0 10px;font-weight:800}
+.hero p.lead{margin:0;max-width:52ch;font-size:16px;opacity:.95}
+
+/* Info sections */
+.info{margin:0 0 22px}
+.info h2{font-size:21px;font-weight:800;margin:0 0 4px;letter-spacing:-.2px}
+.info>p{color:var(--muted);margin:0 0 14px;max-width:60ch}
+.ba{display:grid;grid-template-columns:1fr auto 1fr;gap:12px;align-items:stretch}
+.ba .box{border-radius:16px;border:1px solid var(--line);background:var(--card);padding:14px 16px}
+.ba .box.in{background:var(--soft)}
+.ba h3{margin:0 0 8px;font-size:13.5px;color:var(--muted);font-weight:600}
+.ba q{font-style:italic;font-size:14.5px;line-height:1.55}
+.ba .mid{display:grid;place-items:center;color:var(--accent-t)}
+.ba .mid svg{width:30px;height:30px;fill:none;stroke:currentColor;stroke-width:2;stroke-linecap:round;stroke-linejoin:round}
+.rr{display:flex;gap:8px;font-size:13.5px;padding:5px 0;border-bottom:1px solid var(--line)}
+.rr:last-child{border:0}.rr b{flex:none;width:92px;color:var(--accent-t)}
+@media (max-width:640px){.ba{grid-template-columns:1fr}.ba .mid svg{transform:rotate(90deg)}}
+.flow{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:12px}
+.fs{position:relative;text-align:center;border:1px solid var(--line);background:var(--card);border-radius:16px;padding:20px 12px 16px}
+.fs .no{position:absolute;top:10px;left:10px;display:grid;place-items:center;width:24px;height:24px;border-radius:50%;background:var(--accent);color:#fff;font-size:13px;font-weight:700}
+.fs .ico{display:grid;place-items:center;width:64px;height:64px;margin:0 auto 10px;border-radius:50%;background:var(--soft);color:var(--accent-t)}
+.fs .ico svg{width:30px;height:30px;fill:none;stroke:currentColor;stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round}
+.fs h3{margin:0 0 4px;font-size:16px;color:var(--ink)}
+.fs p{margin:0;font-size:13.5px;color:var(--muted)}
+.fs em{font-style:normal;font-weight:700;color:var(--ink)}
+.tip{margin-top:12px;padding:12px 14px;border-radius:14px;background:var(--soft);border:1px dashed var(--accent);font-size:14px}
+
+/* Cards */
+.panel{--pc:var(--c-teal);--pt:var(--t-teal);background:var(--card);border:1px solid var(--line);border-top:6px solid var(--pc);border-radius:18px;padding:18px;margin-bottom:16px}
+.panel h2{display:flex;align-items:center;gap:10px;font-size:19px;font-weight:700;margin:0 0 4px}
+.panel h2 .n{display:inline-grid;place-items:center;width:28px;height:28px;border-radius:50%;background:var(--pc);color:#fff;font-size:14px;font-weight:700;flex:none}
+.sub{color:var(--muted);font-size:14px;margin:0 0 14px}
+
+/* Controls */
+select,button,input,textarea{font:inherit;font-size:16px;border-radius:12px;padding:12px 14px;min-height:48px;border:1px solid var(--line);background:var(--card);color:var(--ink)}
+select{width:100%}
+button{cursor:pointer;font-weight:600;-webkit-tap-highlight-color:transparent}
+button:hover:not(:disabled){background:var(--soft)}
+button:active:not(:disabled){transform:scale(.98)}
+button:disabled{opacity:.45;cursor:not-allowed}
+:focus-visible{outline:3px solid var(--accent-t);outline-offset:2px}
+.primary{background:var(--accent);border-color:var(--accent);color:#fff}
+.primary:hover:not(:disabled){background:var(--accent-d)}
+.icon-btn{display:inline-flex;align-items:center;justify-content:center;gap:8px}
+.icon-btn svg{width:20px;height:20px;flex:none}
+#noteType{border:2px solid var(--accent);font-weight:600}
+
+/* What to say */
+.say{background:var(--soft);border:1px solid var(--line);border-radius:12px;margin:14px 0 0}
+.say summary{cursor:pointer;padding:12px 14px;font-weight:700;font-size:14.5px;list-style:none;display:flex;justify-content:space-between;align-items:center;gap:10px;min-height:48px}
+.say summary::-webkit-details-marker{display:none}
+.say summary::before{content:"💡";margin-right:2px}
+.say summary span{flex:1}
+.say summary::after{content:"+";font-size:22px;line-height:1;color:var(--ink)}
+.say[open] summary::after{content:"–"}
+.say p{margin:0;padding:0 14px 8px;font-size:13px;color:var(--muted)}
+.say ul{margin:0;padding:0 14px 14px 34px;font-size:14px}
+.say li{margin:5px 0}
+
+/* Dictation */
+.rec{display:flex;align-items:center;gap:10px;font-size:14px;color:var(--muted);margin:12px 0 0}
+.dot{width:10px;height:10px;border-radius:50%;background:#b4c0bc}
+.dot.on{background:#d9382c;animation:pulse 1s infinite}
+@keyframes pulse{50%{opacity:.3}}
+@media (prefers-reduced-motion:reduce){.dot.on{animation:none}}
+textarea{display:block;width:100%;line-height:1.6;resize:vertical;background:var(--bg)}
+#transcript{min-height:160px;margin:14px 0;border:1px solid var(--line)}
+.dictate-btns{display:flex;gap:10px}
+.dictate-btns .actions{display:flex;justify-content:space-between;gap:10px;flex-wrap:wrap;margin-top:14px}
+.actions>div{display:flex;gap:8px;flex-wrap:wrap}
+.msg{font-size:13.5px;color:var(--muted);margin-top:10px;min-height:18px}
+.msg.err{color:var(--req)}
+hr.sep{border:0;border-top:2px dashed var(--line);margin:18px 0}
+
+/* Forms */
+.grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(170px,1fr));gap:12px;margin-bottom:12px}
+label{display:flex;flex-direction:column;gap:6px;font-size:14px;color:var(--muted)}
+label input,label select{width:100%}
+h3{font-size:17px;font-weight:700;margin:22px 0 8px;color:var(--accent-t)}
+
+/* Missing-item colours: red = required, yellow = not mentioned (N/A), blue = check */
+.legend{display:flex;gap:8px;flex-wrap:wrap;margin:8px 0 14px;font-size:12.5px}
+.k{padding:4px 10px;border-radius:99px;border:1px solid}
+.k.req,.fld[data-s=req]{--c:var(--req);--b:var(--req-bg)}
+.k.opt,.fld[data-s=opt]{--c:var(--opt);--b:var(--opt-bg)}
+.k.chk,.fld[data-s=chk]{--c:var(--chk);--b:var(--chk-bg)}
+.k{color:var(--c);background:var(--b);border-color:var(--c)}
+.fld{padding:10px 12px 12px;border-radius:12px;border:1px solid var(--line);border-left:5px solid var(--line);margin-bottom:10px}
+.fld[data-s=req],.fld[data-s=opt],.fld[data-s=chk]{background:var(--b);border-left-color:var(--c)}
+.fld[data-s=ok]{border-left-color:var(--c-teal)}
+.fld>label{flex-direction:row;justify-content:space-between;align-items:center;gap:8px;margin-bottom:6px;color:var(--ink);font-weight:600;font-size:14px}
+.bd{font-style:normal;font-size:12px;font-weight:600;color:var(--c);text-align:right}
+.fld input,.fld select,.fld textarea{width:100%}
+.gaps{font-weight:600;font-size:14px;padding:10px 12px;border-radius:12px;background:var(--t-teal);margin-bottom:12px}
+.gaps.bad{background:var(--req-bg);color:var(--req)}
+.warn{font-size:14px;line-height:1.6;background:var(--req-bg);color:var(--req);padding:10px 12px;border-radius:12px;margin:0 0 12px}
+
+/* Travel */
+.trip{display:grid;grid-template-columns:1fr 1fr 84px 84px 48px;gap:8px;margin-bottom:8px}
+.ac{position:relative}.ac input{width:100%}
+.aclist{position:absolute;z-index:5;left:0;right:0;top:100%;margin:2px 0 0;padding:4px;list-style:none;background:var(--card);border:1px solid var(--line);border-radius:12px;max-height:220px;overflow:auto;box-shadow:0 8px 20px rgba(0,0,0,.18)}
+.aclist li{padding:12px 10px;border-radius:8px;cursor:pointer;font-size:14px;line-height:1.4}
+.aclist li:hover{background:var(--soft)}
+.aclist li.hint{cursor:default;color:var(--muted);font-size:12px}
+.aclist li.hint:hover{background:none}
+.trip input.miss{background:var(--opt-bg);border-color:var(--opt)}
+@media (max-width:640px){.trip{grid-template-columns:1fr 1fr 48px}.trip .ac{grid-column:span 3}}
+.note{font-size:12.5px;color:var(--muted);line-height:1.6;margin-top:8px}
+
+#outPanel,#printDoc{display:none}
+footer{text-align:center;padding:20px 16px 28px;color:var(--muted);font-size:13px}
+
+/* Phones: stack the main buttons so they are easy to tap */
+@media (max-width:640px){
+.panel{padding:16px;border-radius:16px}
+.hero{padding:24px 18px 22px;border-radius:18px}
+.actions{flex-direction:column;align-items:stretch}
+.actions>div{width:100%}
+.actions>div>button{flex:1 1 140px}
+}
+
+@media print{body>*:not(#printDoc){display:none!important}#printDoc{display:block;color:#000;background:#fff}body{background:#fff}*{-webkit-print-color-adjust:exact;print-color-adjust:exact}}
+</style>
+</head>
+<body>
+<svg width="0" height="0" style="position:absolute" aria-hidden="true" focusable="false">
+<symbol id="logo" viewBox="0 0 48 48"><rect width="48" height="48" rx="12" fill="#0f766e"/><path d="M14 12h20a4 4 0 0 1 4 4v13a4 4 0 0 1-4 4H25l-7 6v-6h-4a4 4 0 0 1-4-4V16a4 4 0 0 1 4-4z" fill="#fff"/><path d="M18 23l4.5 4.5L31 19" fill="none" stroke="#0f766e" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/></symbol>
+<!DOCTYPE html>
+<html lang="en-AU">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
+<meta name="theme-color" content="#0f766e" />
+<title>ShiftScribe – Support work notes</title>
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 48 48'%3E%3Crect width='48' height='48' rx='12' fill='%230f766e'/%3E%3Cpath d='M14 12h20a4 4 0 0 1 4 4v13a4 4 0 0 1-4 4H25l-7 6v-6h-4a4 4 0 0 1-4-4V16a4 4 0 0 1 4-4z' fill='%23fff'/%3E%3Cpath d='M18 23l4.5 4.5L31 19' fill='none' stroke='%230f766e' stroke-width='3' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E" />
+<style>
+:root{
+--bg:#f1f7f6;--card:#fff;--ink:#14211f;--muted:#566763;--line:#dce4e2;--soft:#eaf3f2;
+--accent:#0f766e;--accent-d:#0b5f58;--accent-t:#0f766e;
+--req:#b42318;--req-bg:#fdeceb;--opt:#8a5a00;--opt-bg:#fff4d6;--chk:#1d5fa8;--chk-bg:#e7f0fb;
+--c-teal:#0f766e;--c-violet:#7c3aed;--c-coral:#f0603a;--c-amber:#f5a524;--c-sky:#0ea5e9;--c-pink:#e11d74;
+--t-teal:#e3f5f2;--t-violet:#f0e9fe;--t-coral:#fde9e2;--t-amber:#fff2d4;--t-sky:#e1f3fd;--t-pink:#fde4ef;
+--sans:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Inter,Helvetica,Arial,sans-serif}
+@media (prefers-color-scheme:dark){:root{
+--bg:#0e1514;--card:#172120;--ink:#e6efed;--muted:#9bafab;--line:#26332f;--soft:#1e2b29;
+--accent:#0d7f76;--accent-d:#12958a;--accent-t:#5eead4;
+--req:#f2928b;--req-bg:#3a1f1d;--opt:#f0c35c;--opt-bg:#3a2f12;--chk:#8fc1f2;--chk-bg:#18283a;
+--c-teal:#2dd4bf;--c-violet:#a78bfa;--c-coral:#fb8b68;--c-amber:#fbbf4a;--c-sky:#5cc4f5;--c-pink:#f472b6;
+--t-teal:#13302d;--t-violet:#271f40;--t-coral:#3a2119;--t-amber:#3a2f12;--t-sky:#14293a;--t-pink:#3a1a2a}}
+*{box-sizing:border-box}
+html{-webkit-text-size-adjust:100%}
+body{margin:0;font-family:var(--sans);background:var(--bg);color:var(--ink);-webkit-font-smoothing:antialiased;line-height:1.5;padding-bottom:env(safe-area-inset-bottom)}
+
+/* Header */
+header{position:sticky;top:0;z-index:10;display:flex;align-items:center;justify-content:center;gap:10px;
+padding:calc(10px + env(safe-area-inset-top)) max(16px,env(safe-area-inset-right)) 10px max(16px,env(safe-area-inset-left));
+background:var(--card);border-bottom:1px solid var(--line)}
+.brand{display:flex;align-items:center;gap:10px;text-decoration:none;color:var(--ink)}
+.brand svg{width:40px;height:40px;flex:none}
+.brand span{font-size:22px;font-weight:700;letter-spacing:-.3px}
+.badge{font-size:13px;color:var(--muted)}
+@media (max-width:480px){.badge{display:none}}
+
+main{max-width:820px;margin:0 auto;padding:16px 16px 8px}
+
+/* Hero */
+.hero{display:flex;align-items:center;gap:18px;flex-wrap:wrap;border-radius:22px;padding:26px 22px;margin:4px 0 20px;color:#fff;background:linear-gradient(135deg,#0f766e,#0b5f58)}
+.hero-text{flex:1 1 280px}
+.hero-art{flex:0 1 220px;width:220px;max-width:100%;margin:0 auto}
+.hi{display:inline-block;margin:0 0 12px;padding:6px 14px;border-radius:99px;background:rgba(255,255,255,.18);font-size:14px;font-weight:600}
+.hero h1{font-size:clamp(25px,6.4vw,34px);line-height:1.2;letter-spacing:-.5px;margin:0 0 10px;font-weight:800}
+.hero p.lead{margin:0;max-width:52ch;font-size:16px;opacity:.95}
+
+/* Info sections */
+.info{margin:0 0 22px}
+.info h2{font-size:21px;font-weight:800;margin:0 0 4px;letter-spacing:-.2px}
+.info>p{color:var(--muted);margin:0 0 14px;max-width:60ch}
+.ba{display:grid;grid-template-columns:1fr auto 1fr;gap:12px;align-items:stretch}
+.ba .box{border-radius:16px;border:1px solid var(--line);background:var(--card);padding:14px 16px}
+.ba .box.in{background:var(--soft)}
+.ba h3{margin:0 0 8px;font-size:13.5px;color:var(--muted);font-weight:600}
+.ba q{font-style:italic;font-size:14.5px;line-height:1.55}
+.ba .mid{display:grid;place-items:center;color:var(--accent-t)}
+.ba .mid svg{width:30px;height:30px;fill:none;stroke:currentColor;stroke-width:2;stroke-linecap:round;stroke-linejoin:round}
+.rr{display:flex;gap:8px;font-size:13.5px;padding:5px 0;border-bottom:1px solid var(--line)}
+.rr:last-child{border:0}.rr b{flex:none;width:92px;color:var(--accent-t)}
+@media (max-width:640px){.ba{grid-template-columns:1fr}.ba .mid svg{transform:rotate(90deg)}}
+.flow{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:12px}
+.fs{position:relative;text-align:center;border:1px solid var(--line);background:var(--card);border-radius:16px;padding:20px 12px 16px}
+.fs .no{position:absolute;top:10px;left:10px;display:grid;place-items:center;width:24px;height:24px;border-radius:50%;background:var(--accent);color:#fff;font-size:13px;font-weight:700}
+.fs .ico{display:grid;place-items:center;width:64px;height:64px;margin:0 auto 10px;border-radius:50%;background:var(--soft);color:var(--accent-t)}
+.fs .ico svg{width:30px;height:30px;fill:none;stroke:currentColor;stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round}
+.fs h3{margin:0 0 4px;font-size:16px;color:var(--ink)}
+.fs p{margin:0;font-size:13.5px;color:var(--muted)}
+.fs em{font-style:normal;font-weight:700;color:var(--ink)}
+.tip{margin-top:12px;padding:12px 14px;border-radius:14px;background:var(--soft);border:1px dashed var(--accent);font-size:14px}
+
+
+/* Mistakes are fine */
+.talk{display:grid;grid-template-columns:150px 1fr;gap:18px;align-items:center;border:1px solid var(--line);background:var(--card);border-radius:18px;padding:18px}
+.talk svg{width:150px;height:auto;display:block}
+.talk .quote{font-size:15px;line-height:1.8;font-style:italic;background:var(--soft);border-radius:14px;padding:14px 16px;margin:0}
+.talk .fill{opacity:.5;text-decoration:line-through;text-decoration-thickness:1.5px}
+.talk mark{background:var(--opt-bg);color:inherit;padding:1px 5px;border-radius:5px;font-style:normal;font-weight:600}
+.talk .key{display:flex;gap:14px;flex-wrap:wrap;font-size:13px;color:var(--muted);margin-top:10px}
+.talk .key span{display:inline-flex;align-items:center;gap:6px}
+@media (max-width:640px){.talk{grid-template-columns:1fr;justify-items:center;text-align:left}.talk svg{width:130px}}
+
+/* Colour guide */
+.guide{margin-top:28px;padding:18px;border:1px solid var(--line);border-radius:16px;background:var(--card)}
+.guide h3{margin:0 0 4px;font-size:18px;color:var(--ink)}
+.guide>p{margin:0;font-size:14px;color:var(--muted)}
+.gl{display:grid;gap:12px;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));margin-top:16px}
+.gi{border-left:6px solid var(--c);background:var(--b);border-radius:12px;padding:12px 14px;font-size:14px;line-height:1.45}
+.gi b{display:block;margin-bottom:2px;color:var(--c);font-size:15px}
+.gi.req{--c:var(--req);--b:var(--req-bg)}.gi.opt{--c:var(--opt);--b:var(--opt-bg)}.gi.chk{--c:var(--chk);--b:var(--chk-bg)}
+
+/* Cards */
+.panel{--pc:var(--c-teal);--pt:var(--t-teal);background:var(--card);border:1px solid var(--line);border-top:6px solid var(--pc);border-radius:18px;padding:18px;margin-bottom:16px}
+.panel h2{display:flex;align-items:center;gap:10px;font-size:19px;font-weight:700;margin:0 0 4px}
+.panel h2 .n{display:inline-grid;place-items:center;width:28px;height:28px;border-radius:50%;background:var(--pc);color:#fff;font-size:14px;font-weight:700;flex:none}
+.sub{color:var(--muted);font-size:14px;margin:0 0 14px}
+
+/* Controls */
+select,button,input,textarea{font:inherit;font-size:16px;border-radius:12px;padding:12px 14px;min-height:48px;border:1px solid var(--line);background:var(--card);color:var(--ink)}
+select{width:100%}
+button{cursor:pointer;font-weight:600;-webkit-tap-highlight-color:transparent}
+button:hover:not(:disabled){background:var(--soft)}
+button:active:not(:disabled){transform:scale(.98)}
+button:disabled{opacity:.45;cursor:not-allowed}
+:focus-visible{outline:3px solid var(--accent-t);outline-offset:2px}
+.primary{background:var(--accent);border-color:var(--accent);color:#fff}
+.primary:hover:not(:disabled){background:var(--accent-d)}
+.icon-btn{display:inline-flex;align-items:center;justify-content:center;gap:8px}
+.icon-btn svg{width:20px;height:20px;flex:none}
+#noteType{border:2px solid var(--accent);font-weight:600}
+
+/* What to say */
+.say{background:var(--soft);border:1px solid var(--line);border-radius:12px;margin:14px 0 0}
+.say summary{cursor:pointer;padding:12px 14px;font-weight:700;font-size:14.5px;list-style:none;display:flex;justify-content:space-between;align-items:center;gap:10px;min-height:48px}
+.say summary::-webkit-details-marker{display:none}
+.say summary::before{content:"💡";margin-right:2px}
+.say summary span{flex:1}
+.say summary::after{content:"+";font-size:22px;line-height:1;color:var(--ink)}
+.say[open] summary::after{content:"–"}
+.say p{margin:0;padding:0 14px 8px;font-size:13px;color:var(--muted)}
+.say ul{margin:0;padding:0 14px 14px 34px;font-size:14px}
+.say li{margin:5px 0}
+
+/* Dictation */
+.rec{display:flex;align-items:center;gap:10px;font-size:14px;color:var(--muted);margin:12px 0 0}
+.dot{width:10px;height:10px;border-radius:50%;background:#b4c0bc}
+.dot.on{background:#d9382c;animation:pulse 1s infinite}
+@keyframes pulse{50%{opacity:.3}}
+@media (prefers-reduced-motion:reduce){.dot.on{animation:none}}
+textarea{display:block;width:100%;line-height:1.6;resize:vertical;background:var(--bg)}
+#transcript{min-height:160px;margin:14px 0;border:1px solid var(--line)}
+.dictate-btns{display:flex;gap:10px}
+.dictate-btns .actions{display:flex;justify-content:space-between;gap:10px;flex-wrap:wrap;margin-top:14px}
+.actions>div{display:flex;gap:8px;flex-wrap:wrap}
+.msg{font-size:13.5px;color:var(--muted);margin-top:10px;min-height:18px}
+.msg.err{color:var(--req)}
+hr.sep{border:0;border-top:2px dashed var(--line);margin:18px 0}
+
+/* Forms */
+.grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(170px,1fr));gap:12px;margin-bottom:12px}
+label{display:flex;flex-direction:column;gap:6px;font-size:14px;color:var(--muted)}
+label input,label select{width:100%}
+h3{font-size:17px;font-weight:700;margin:22px 0 8px;color:var(--accent-t)}
+
+/* Missing-item colours: red = required, yellow = not mentioned (N/A), blue = check */
+.legend{display:flex;gap:8px;flex-wrap:wrap;margin:8px 0 14px;font-size:12.5px}
+.k{padding:4px 10px;border-radius:99px;border:1px solid}
+.k.req,.fld[data-s=req]{--c:var(--req);--b:var(--req-bg)}
+.k.opt,.fld[data-s=opt]{--c:var(--opt);--b:var(--opt-bg)}
+.k.chk,.fld[data-s=chk]{--c:var(--chk);--b:var(--chk-bg)}
+.k{color:var(--c);background:var(--b);border-color:var(--c)}
+.fld{padding:10px 12px 12px;border-radius:12px;border:1px solid var(--line);border-left:5px solid var(--line);margin-bottom:10px}
+.fld[data-s=req],.fld[data-s=opt],.fld[data-s=chk]{background:var(--b);border-left-color:var(--c)}
+.fld[data-s=ok]{border-left-color:var(--c-teal)}
+.fld>label{flex-direction:row;justify-content:space-between;align-items:center;gap:8px;margin-bottom:6px;color:var(--ink);font-weight:600;font-size:14px}
+.bd{font-style:normal;font-size:12px;font-weight:600;color:var(--c);text-align:right}
+.fld input,.fld select,.fld textarea{width:100%}
+.gaps{font-weight:600;font-size:14px;padding:10px 12px;border-radius:12px;background:var(--t-teal);margin-bottom:12px}
+.gaps.bad{background:var(--req-bg);color:var(--req)}
+.warn{font-size:14px;line-height:1.6;background:var(--req-bg);color:var(--req);padding:10px 12px;border-radius:12px;margin:0 0 12px}
+
+/* Travel */
+.trip{display:grid;grid-template-columns:1fr 1fr 84px 84px 48px;gap:8px;margin-bottom:8px}
+.ac{position:relative}.ac input{width:100%}
+.aclist{position:absolute;z-index:5;left:0;right:0;top:100%;margin:2px 0 0;padding:4px;list-style:none;background:var(--card);border:1px solid var(--line);border-radius:12px;max-height:220px;overflow:auto;box-shadow:0 8px 20px rgba(0,0,0,.18)}
+.aclist li{padding:12px 10px;border-radius:8px;cursor:pointer;font-size:14px;line-height:1.4}
+.aclist li:hover{background:var(--soft)}
+.aclist li.hint{cursor:default;color:var(--muted);font-size:12px}
+.aclist li.hint:hover{background:none}
+.trip input.miss{background:var(--opt-bg);border-color:var(--opt)}
+@media (max-width:640px){.trip{grid-template-columns:1fr 1fr 48px}.trip .ac{grid-column:span 3}}
+.note{font-size:12.5px;color:var(--muted);line-height:1.6;margin-top:8px}
+
+#outPanel,#printDoc{display:none}
+footer{text-align:center;padding:20px 16px 28px;color:var(--muted);font-size:13px}
+
+/* Phones: stack the main buttons so they are easy to tap */
+@media (max-width:640px){
+.panel{padding:16px;border-radius:16px}
+.hero{padding:24px 18px 22px;border-radius:18px}
+.actions{flex-direction:column;align-items:stretch}
+.actions>div{width:100%}
+.actions>div>button{flex:1 1 140px}
+}
+
+@media print{body>*:not(#printDoc){display:none!important}#printDoc{display:block;color:#000;background:#fff}body{background:#fff}*{-webkit-print-color-adjust:exact;print-color-adjust:exact}}
+</style>
+</head>
+<body>
+<svg width="0" height="0" style="position:absolute" aria-hidden="true" focusable="false">
+<symbol id="logo" viewBox="0 0 48 48"><rect width="48" height="48" rx="12" fill="#0f766e"/><path d="M14 12h20a4 4 0 0 1 4 4v13a4 4 0 0 1-4 4H25l-7 6v-6h-4a4 4 0 0 1-4-4V16a4 4 0 0 1 4-4z" fill="#fff"/><path d="M18 23l4.5 4.5L31 19" fill="none" stroke="#0f766e" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/></symbol>
+<symbol id="mic" viewBox="0 0 24 24"><path d="M12 15a3 3 0 0 0 3-3V6a3 3 0 0 0-6 0v6a3 3 0 0 0 3 3z" fill="currentColor"/><path d="M18 11.5a6 6 0 0 1-12 0M12 17.5V21" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></symbol>
+</svg>
+
+<header>
+<a class="brand" href="/" aria-label="ShiftScribe home"><svg role="img" aria-hidden="true"><use href="#logo"/></svg><span>ShiftScribe</span></a>
+</header>
+
+<main>
+<section class="hero">
+<div class="hero-text">
+<p class="hi">Welcome, glad you’re here</p>
+<h1>Talk about your shift.<br>We’ll write it up with NDIS formatting.</h1>
+<p class="lead">Just say what happened, the way you’d tell a colleague. ShiftScribe turns it into a neat, professional record you can check, copy or download.</p>
+</div>
+<svg class="hero-art" viewBox="0 0 220 170" role="img" aria-label="A support worker speaking, with their words turning into a finished record">
+<rect x="6" y="12" width="88" height="58" rx="14" fill="#fff" opacity=".95"/><path d="M28 69l-8 17 24-17z" fill="#fff" opacity=".95"/>
+<g fill="#0f766e"><rect x="22" y="35" width="7" height="14" rx="3.5"/><rect x="34" y="27" width="7" height="30" rx="3.5"/><rect x="46" y="21" width="7" height="42" rx="3.5"/><rect x="58" y="29" width="7" height="26" rx="3.5"/><rect x="70" y="36" width="7" height="12" rx="3.5"/></g>
+<circle cx="48" cy="112" r="15" fill="#ffd9b8"/><path d="M18 164c0-19 13-29 30-29s30 10 30 29z" fill="#f5a524"/>
+<path d="M100 42h22" stroke="#fff" stroke-width="3" stroke-dasharray="1 7" stroke-linecap="round" fill="none"/><path d="M119 36l7 6-7 6" stroke="#fff" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" fill="none"/>
+<rect x="132" y="18" width="82" height="118" rx="10" fill="#fff"/><rect x="144" y="32" width="38" height="8" rx="4" fill="#0f766e"/>
+<g fill="#cfe3e0"><rect x="144" y="52" width="58" height="5" rx="2.5"/><rect x="144" y="66" width="48" height="5" rx="2.5"/><rect x="144" y="80" width="58" height="5" rx="2.5"/><rect x="144" y="94" width="40" height="5" rx="2.5"/><rect x="144" y="108" width="52" height="5" rx="2.5"/></g>
+<circle cx="198" cy="136" r="17" fill="#f5a524"/><path d="M190 136l6 6 10-12" stroke="#fff" stroke-width="3.5" stroke-linecap="round" stroke-linejoin="round" fill="none"/>
+</svg>
+</section>
+
+<section class="info" aria-labelledby="what">
+<h2 id="what">What is ShiftScribe?</h2>
+<p>A simple tool for support workers. It turns your spoken or typed notes into NDIS-style records, so you spend less time on paperwork and more time with your clients.</p>
+<div class="ba">
+<div class="box in"><h3>You say or type</h3><q>Hi, it’s Sam. I was with Jordan from 9 till 3. We went to the library and practised budgeting. No medications today, and he was in a great mood.</q></div>
+<div class="mid" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M4 12h15M13 6l6 6-6 6"/></svg></div>
+<div class="box"><h3>You get a shift note</h3>
+<div class="rr"><b>Participant</b><span>Jordan</span></div>
+<div class="rr"><b>Worker</b><span>Sam</span></div>
+<div class="rr"><b>Time</b><span>9:00 am to 3:00 pm</span></div>
+<div class="rr"><b>Activities</b><span>Library visit, budgeting practice</span></div>
+<div class="rr"><b>Medications</b><span>None</span></div>
+</div>
+</div>
+</section>
+
+<section class="info" aria-labelledby="oops">
+<h2 id="oops">Don’t worry about getting it perfect</h2>
+<p>It doesn’t matter if you stutter, say um, change your mind or lose your train of thought. The AI only picks out the important parts.</p>
+<div class="talk">
+<svg viewBox="0 0 150 150" role="img" aria-label="A person talking, with sound waves coming from their mouth"><path d="M24 148c0-24 20-38 46-38s46 14 46 38z" fill="#0f766e"/><circle cx="70" cy="62" r="26" fill="#ffd9b8"/><path d="M44 58c0-20 12-30 28-30s26 10 26 26c-10-4-20-10-26-18-6 10-16 18-28 22z" fill="#5b3a29"/><circle cx="62" cy="62" r="2.5" fill="#14211f"/><circle cx="80" cy="62" r="2.5" fill="#14211f"/><ellipse cx="71" cy="76" rx="5" ry="4" fill="#b4372a"/><g fill="none" stroke="#f5a524" stroke-width="3.5" stroke-linecap="round"><path d="M104 58q8 7 0 14"/><path d="M113 50q14 15 0 30"/><path d="M122 42q20 23 0 46"/></g></svg>
+<div>
+<p class="quote"><span class="fill">Um, so, uh,</span> <mark>we went to the library</mark> <span class="fill">and, like, sorry, yeah,</span> <mark>did some budgeting</mark>. <span class="fill">Oh wait, um,</span> <mark>no medications today</mark>.</p>
+<div class="key"><span><mark>Highlighted</mark> kept in your record</span><span><span class="fill">Faded</span> left out</span></div>
+</div>
+</div>
+</section>
+
+<section class="info" aria-labelledby="how">
+<h2 id="how">How to use it</h2>
+<p>Four quick steps. It takes about a minute.</p>
+<div class="flow">
+<div class="fs"><b class="no">1</b><div class="ico"><svg viewBox="0 0 24 24"><rect x="5" y="4" width="14" height="17" rx="2"/><path d="M9 4h6v3H9zM8.5 12h7M8.5 16h5"/></svg></div><h3>Choose</h3><p>Pick a shift note, incident report, behaviour record or handover.</p></div>
+<div class="fs"><b class="no">2</b><div class="ico"><svg viewBox="0 0 24 24"><rect x="9" y="3" width="6" height="11" rx="3"/><path d="M5 11a7 7 0 0 0 14 0M12 18v3"/></svg></div><h3>Talk</h3><p>Press start and speak. Stuck? Tap <em>What to say</em>.</p></div>
+<div class="fs"><b class="no">3</b><div class="ico"><svg viewBox="0 0 24 24"><path d="M12 3l1.8 4.7 4.7 1.8-4.7 1.8L12 16l-1.8-4.7L5.5 9.5l4.7-1.8zM18 15l.8 2.2L21 18l-2.2.8L18 21l-.8-2.2L15 18l2.2-.8z"/></svg></div><h3>Generate</h3><p>Tap <em>Generate record</em> and your notes are formatted in seconds.</p></div>
+<div class="fs"><b class="no">4</b><div class="ico"><svg viewBox="0 0 24 24"><rect x="4" y="4" width="16" height="16" rx="3"/><path d="M8 12.5l3 3 5-6"/></svg></div><h3>Check</h3><p>Fill in anything highlighted, then copy or download Word or PDF.</p></div>
+</div>
+<div class="guide">
+<h3>Colour guide</h3>
+<p>After you generate a record, each box is coloured so you know what to do next.</p>
+<div class="gl">
+<div class="gi req"><b>Red: required</b>Missing and needed. Please fill it in.</div>
+<div class="gi opt"><b>Yellow: not mentioned</b>You didn’t say it, so it shows N/A. Change it if needed.</div>
+<div class="gi chk"><b>Blue: please check</b>The AI wasn’t sure. Make sure it’s right.</div>
+</div>
+</div>
+</section>
+
+<section class="panel p1" aria-labelledby="t1">
+<h2 id="t1"><span class="n">1</span>Choose a record</h2>
+<p class="sub">Pick the document you need to write.</p>
+<label>Record type<select id="noteType">
+<option value="shift">Shift note</option><option value="incident">Incident report</option><option value="abc">Behaviour record (ABC)</option>
+<option value="handover">Handover note</option><option value="travel">Travel log only</option></select></label>
+</section>
+
+<section class="panel p2" aria-labelledby="t2">
+<h2 id="t2"><span class="n">2</span>Dictate</h2>
+<p class="sub">Press start and speak. When you’re done, click stop, then generate your record to make professional NDIS notes. You can also type or paste your notes. Not sure what to say? Open the tips below.</p>
+
+<details class="say">
+<summary><span id="saySum">What to say</span></summary>
+<p>You don’t need to say it in order. Anything you skip will be highlighted for you to fill in.</p>
+<ul id="sayList"></ul>
+</details>
+
+<select id="language" aria-label="Speech language" style="margin-top:14px"><option value="en-AU">English (Australia)</option><option value="en-GB">English (UK)</option><option value="en-US">English (US)</option><option value="en-IN">English (India)</option><option value="es-ES">Spanish</option><option value="fr-FR">French</option></select>
+<div class="rec"><span class="dot" id="dot"></span><span id="recordStatus">Ready to record</span></div>
+<textarea id="transcript" placeholder="Your transcript will appear here…"></textarea>
+<div class="dictate-btns"><button id="start" class="primary icon-btn"><svg aria-hidden="true"><use href="#mic"/></svg>Start dictation</button><button id="stop" disabled>Stop</button></div>
+<div class="actions" style="margin-top:10px"><div><button id="copy">Copy text</button><button id="clear">Clear</button></div></div>
+<div class="msg" id="message" role="status"></div>
+
+<hr class="sep">
+<label style="margin-bottom:14px">Extra instructions (optional)<input id="instructions" maxlength="1000" placeholder="e.g. keep it brief" /></label>
+<div class="actions" style="margin-top:0"><div><button id="convert" class="primary">Generate record</button><button id="manual">Fill in manually</button></div></div>
+<div class="msg" id="convertMsg" role="status"></div>
+</section>
+
+<section class="panel p3" id="outPanel" aria-labelledby="t3">
+<h2 id="t3"><span class="n">3</span>Review and edit</h2><p class="sub" id="noteTitle">Shift note</p>
+<div class="legend"><span class="k req">Missing: required</span><span class="k opt">Not mentioned: N/A</span><span class="k chk">Check: AI wasn’t sure</span></div>
+<div class="gaps" id="gaps" role="status"></div>
+<p class="warn" id="incWarn" hidden>If this may be a reportable incident (for example a death, serious injury, abuse or neglect), tell your manager straight away. Registered providers must notify the NDIS Commission within 24 hours of becoming aware.</p>
+<div class="grid" id="meta"></div>
+<div id="fields"></div>
+<div id="travelBox">
+<h3>Travel log</h3>
+<div id="trips"></div>
+<div class="actions" style="margin-top:6px"><div><button id="addTrip">Add trip</button><button id="calc" class="primary">Calculate distances</button></div><strong id="total"></strong></div>
+<p class="note">Distances come from road routing and can differ from your actual route. Check them against a maps app before you use them for billing or reimbursement.</p>
+</div>
+<div class="actions"><div><button id="reconvert">Generate again</button></div>
+<div><button id="copyNote">Copy</button><button id="dlDoc">Download Word</button><button id="dlPdf" class="primary">Download PDF</button></div></div>
+<div class="msg" id="noteMsg" role="status"></div>
+<p class="note">AI-generated drafts can contain errors or leave things out. The support worker must check the record is accurate before it is saved or submitted.</p>
+</section>
+</main>
+<footer>ShiftScribe · The best AI for dictation and NDIS formatting.</footer>
+<div id="printDoc"></div>
+
+<script>
+const $=id=>document.getElementById(id);
+const SR=window.SpeechRecognition||window.webkitSpeechRecognition;
+const transcript=$("transcript"),startBtn=$("start"),stopBtn=$("stop"),lang=$("language"),message=$("message");
+let recognition,listening=false,sessionText="",finalText="",data={},check=new Set(),trips=[];
+const NA="N/A";let na=new Set(); // optional fields the worker didn't mention are filled with N/A and shown yellow
+const G="#0f766e",BD={req:"Missing: required",opt:"Not mentioned (N/A)",chk:"Check",ok:""};
+
+/* ---------- Record types ----------
+   req:1  = required (red when empty)
+   no req = optional (yellow, filled with N/A when not mentioned)
+   t: text | area | date | time | datetime | score (0-10) | choice (needs o:[options])  */
+const META=[{k:"participant",l:"Participant",t:"text",req:1},{k:"worker",l:"Support worker",t:"text",req:1},{k:"date",l:"Date",t:"date",req:1},{k:"start",l:"Start time",t:"time",req:1,time:1},{k:"end",l:"End time",t:"time",req:1,time:1}];
+const YN=["Yes","No"];
+const TYPES={
+shift:{title:"Shift note",travel:1,
+say:["Your name and the client’s name","Start and end time of your shift","What you did together (activities)","NDIS goals you worked on","Medications: name, dose, time, and whether given or refused (or say “no medications”)","Any concerns or challenges","How their behaviour was, with a score from 0 (worst) to 10 (best)","Any trips: from where to where"],
+fields:[
+{k:"overview",l:"Shift overview",t:"area"},{k:"activities",l:"Activities",t:"area"},
+{k:"goals",l:"NDIS goals worked on",t:"area"},{k:"concerns",l:"Concerns and challenges",t:"area"},
+{k:"medications",l:"Medications (name, dose, time, given or refused; write “none” if no medications)",t:"area",req:1},
+{k:"behaviour",l:"Overall behaviour (0 = worst, 10 = best)",t:"score"},{k:"behaviourNote",l:"Behaviour notes",t:"area"}]},
+incident:{title:"Incident report",warn:1,noTimes:1,
+ml:{participant:"Client",worker:"Support worker (reporting)",date:"Date of report"},
+say:["Your name and the client’s name","Type of incident: general, injury, medication error, fall, behaviour, property damage, car accident or other","Severity: low, medium, high or critical","Date and time it happened","Where it happened: client home, community, office or other (with the address)","Who else was there (witnesses)","What happened, step by step","Whether photos were taken","Whether you went off duty because of it","Whether anyone was injured, and the details","Whether you reported it, who to, and when","How it was managed at the time","The result of the action taken"],
+fields:[
+{k:"incidentType",l:"Incident type",t:"choice",o:["General","Injury","Medication error","Fall","Behaviour","Property damage","Car accident","Other"],req:1},
+{k:"severity",l:"Severity",t:"choice",o:["Low","Medium","High","Critical"],req:1},
+{k:"when",l:"When did it occur? (date and time)",t:"datetime",req:1},
+{k:"locationType",l:"Location type",t:"choice",o:["Client home","Community","Office","Other"],req:1},
+{k:"locationAddress",l:"Specific address",t:"text",req:1},
+{k:"witnesses",l:"Any witnesses?",t:"area"},
+{k:"what",l:"Describe what happened",t:"area",req:1},
+{k:"photos",l:"Photos taken of the incident? (attach them separately when you submit)",t:"choice",o:YN},
+{k:"offDuty",l:"Did you go off duty as a result?",t:"choice",o:YN},
+{k:"injury",l:"Injury as a result?",t:"choice",o:YN,req:1},
+{k:"injuryDetails",l:"Injury details (if yes)",t:"area"},
+{k:"reported",l:"Did you report the incident?",t:"choice",o:YN,req:1},
+{k:"reportedTo",l:"Who did you report it to, and when?",t:"text"},
+{k:"managed",l:"How was the incident managed at that time?",t:"area",req:1},
+{k:"result",l:"Result of the action taken",t:"area"}]},
+abc:{title:"Behaviour record (ABC)",travel:0,
+say:["Your name and the client’s name","Where you were and who was there","What happened just before (antecedent)","What the person did (behaviour)","What happened straight after (consequence)","How long it lasted","How intense it was, 0 to 10","What strategies you used and whether they worked","Any injuries or property damage"],
+fields:[
+{k:"setting",l:"Setting and who was present",t:"area",req:1},{k:"antecedent",l:"Antecedent (what happened before)",t:"area",req:1},
+{k:"behaviour_desc",l:"Behaviour (what the person did)",t:"area",req:1},{k:"consequence",l:"Consequence (what happened after)",t:"area",req:1},
+{k:"duration",l:"How long it lasted",t:"text",req:1},{k:"behaviour",l:"Intensity (0 to 10)",t:"score"},
+{k:"strategies",l:"Strategies used and how they worked",t:"area"},{k:"injury",l:"Injuries or property damage",t:"area"}]},
+handover:{title:"Handover note",
+say:["Your name and the client’s name","Key points for the next worker","Any concerns or things to watch","Medication updates","Tasks for the next shift"],
+fields:[
+{k:"overview",l:"Key points for the next worker",t:"area",req:1},{k:"concerns",l:"Concerns and things to watch",t:"area"},
+{k:"medications",l:"Medication updates",t:"area"},{k:"followup",l:"Tasks for the next shift",t:"area",req:1}]},
+travel:{title:"Travel log",travel:1,
+say:["Your name and the client’s name","Why you were travelling","Each trip: from where to where"],
+fields:[{k:"purpose",l:"Purpose of travel",t:"area",req:1}]}};
+const typ=()=>TYPES[$("noteType").value];
+const metaOf=T=>META.filter(m=>!(m.time&&T.noTimes)).map(m=>({...m,l:(T.ml&&T.ml[m.k])||m.l}));
+
+/* ---------- "What to say" guide ---------- */
+function renderSay(){const T=typ();$("saySum").textContent="What to say for a "+T.title.toLowerCase();
+$("sayList").innerHTML=T.say.map(s=>`<li>${s}</li>`).join("");}
+
+/* ---------- Dictation ---------- */
+if(!SR){startBtn.disabled=true;message.textContent="Dictation isn’t supported in this browser. Try Chrome, or type or paste your notes.";}
+function updateUI(on){listening=on;startBtn.disabled=on||!SR;stopBtn.disabled=!on;lang.disabled=on;
+$("dot").classList.toggle("on",on);$("recordStatus").textContent=on?"Listening…":"Ready to record";}
+startBtn.onclick=()=>{if(!SR||listening)return;
+recognition=new SR();recognition.lang=lang.value;recognition.continuous=true;recognition.interimResults=true;
+const ex=transcript.value.trim();sessionText=ex?ex+" ":"";finalText="";
+updateUI(true);message.textContent="Listening. Start speaking…";
+recognition.onresult=e=>{let interim="";for(let i=e.resultIndex;i<e.results.length;i++){const s=e.results[i][0].transcript;
+if(e.results[i].isFinal)finalText+=s.trim()+" ";else interim+=s;}
+transcript.value=sessionText+finalText+interim;transcript.scrollTop=transcript.scrollHeight;};
+recognition.onerror=e=>{if(e.error==="no-speech"||e.error==="aborted")return;message.textContent="Dictation error: "+e.error+". Check microphone permissions.";};
+recognition.onend=()=>{if(listening){try{recognition.start();}catch(_){updateUI(false);}}};
+try{recognition.start();}catch(_){updateUI(false);message.textContent="Could not start dictation.";}};
+stopBtn.onclick=()=>{if(!recognition)return;listening=false;recognition.stop();updateUI(false);message.textContent="Dictation stopped. Edit the text if needed, then generate.";};
+$("copy").onclick=async()=>{try{await navigator.clipboard.writeText(transcript.value);message.textContent="Transcript copied.";}catch(_){transcript.select();message.textContent="Select the text and copy it manually.";}};
+$("clear").onclick=()=>{if(listening&&recognition){listening=false;recognition.stop();updateUI(false);}transcript.value="";sessionText="";finalText="";message.textContent="Transcript cleared.";};
+
+/* ---------- Form with missing-item colours ---------- */
+const empty=k=>!String(data[k]??"").trim();
+function stateOf(f){const v=String(data[f.k]??"").trim();
+if(!v)return f.req?"req":"opt";
+if(na.has(f.k)&&v===NA)return "opt";
+return check.has(f.k)?"chk":"ok";}
+function mk(f,parent){
+const w=document.createElement("div");w.className="fld";const id="f_"+f.k;
+let h=`<label for="${id}"><span>${f.l}</span><em class="bd"></em></label>`;
+const naOpt=f.req?"":`<option value="${NA}">N/A</option>`;
+if(f.t==="score")h+=`<select id="${id}"><option value="">Select…</option>${[...Array(11).keys()].map(n=>`<option>${n}</option>`).join("")}${naOpt}</select>`;
+else if(f.t==="choice")h+=`<select id="${id}"><option value="">Select…</option>${f.o.map(o=>`<option>${esc(o)}</option>`).join("")}${naOpt}</select>`;
+else if(f.t==="area")h+=`<textarea id="${id}" rows="4"></textarea>`;
+else h+=`<input id="${id}" type="${f.t==="datetime"?"datetime-local":f.t}">`;
+w.innerHTML=h;const el=w.querySelector("#"+id);el.value=data[f.k]??"";
+const upd=()=>{const s=stateOf(f);w.dataset.s=s;w.querySelector(".bd").textContent=BD[s];};
+el.oninput=el.onchange=()=>{data[f.k]=el.value;check.delete(f.k);na.delete(f.k);upd();gaps();};
+upd();parent.appendChild(w);}
+function gaps(){const T=typ(),all=[...metaOf(T),...T.fields];
+const n=all.filter(f=>f.req&&empty(f.k)).length;
+const c=[...check].filter(k=>!empty(k)&&!(na.has(k)&&data[k]===NA)).length;
+const a=all.filter(f=>na.has(f.k)&&data[f.k]===NA).length;
+$("gaps").className="gaps"+(n?" bad":"");
+$("gaps").textContent=(n?n+" required item"+(n>1?"s":"")+" missing":"All required items filled in")+(c?" · "+c+" to check":"")+(a?" · "+a+" not mentioned (N/A)":"");}
+function renderForm(){const T=typ();
+T.fields.forEach(f=>{if(!f.req&&empty(f.k)){data[f.k]=NA;na.add(f.k);}}); // prefill optional gaps with N/A
+$("noteTitle").textContent=T.title+" · draft for your review";
+$("incWarn").hidden=!T.warn;$("travelBox").style.display=T.travel?"block":"none";
+$("meta").innerHTML="";$("fields").innerHTML="";
+metaOf(T).forEach(m=>mk(m,$("meta")));
+T.fields.forEach(f=>mk(f,$("fields")));renderTrips();gaps();}
+$("noteType").onchange=()=>{renderSay();if($("outPanel").style.display==="block")renderForm();};
+
+/* ---------- Travel log ---------- */
+let acT;
+function ac(input,t,key){
+const list=document.createElement("ul");list.className="aclist";list.hidden=true;list.setAttribute("role","listbox");
+input.parentNode.appendChild(list);const hide=()=>{list.hidden=true;};
+input.addEventListener("input",()=>{t[key]=input.value;t[key+"C"]=null;t[key+"P"]=false;clearTimeout(acT);const q=input.value.trim();
+if(q.length<4){hide();return;}
+acT=setTimeout(async()=>{try{const r=await fetch("/api/places?q="+encodeURIComponent(q));const d=await r.json();
+list.innerHTML="";(d.places||[]).forEach(p=>{const li=document.createElement("li");li.textContent=p.label;li.setAttribute("role","option");
+li.addEventListener("pointerdown",e=>{e.preventDefault();input.value=p.label;t[key]=p.label;t[key+"C"]=Number.isFinite(p.lon)&&Number.isFinite(p.lat)?[p.lon,p.lat]:null;t[key+"P"]=true;hide();if(t.fromP&&t.toP)calcTrips([t]);});
+list.appendChild(li);});if(d.source==="ai"&&list.children.length){const h=document.createElement("li");h.className="hint";h.textContent="AI suggestions can be wrong. Check the address.";list.appendChild(h);}list.hidden=!list.children.length;}catch(_){hide();}},350);});
+input.addEventListener("blur",()=>setTimeout(hide,150));}
+function renderTrips(){const box=$("trips");box.innerHTML="";
+trips.forEach((t,i)=>{const r=document.createElement("div");r.className="trip";
+r.innerHTML=`<div class="ac"><input aria-label="From" placeholder="From (start typing an address)" autocomplete="off" value="${esc(t.from)}"></div><div class="ac"><input aria-label="To" placeholder="To (start typing an address)" autocomplete="off" value="${esc(t.to)}"></div>`+
+`<input aria-label="Kilometres" type="number" min="0" step="0.1" placeholder="km" value="${esc(t.km)}" class="${t.km===""?"miss":""}"><input aria-label="Minutes" type="number" min="0" placeholder="min" value="${esc(t.min)}"><button aria-label="Remove trip">✕</button>`;
+const [a,b,c,d,x]=r.children;ac(a.firstChild,t,"from");ac(b.firstChild,t,"to");
+d.oninput=()=>{t.min=d.value;};
+c.oninput=()=>{t.km=c.value;c.classList.toggle("miss",c.value==="");sumKm();};
+x.onclick=()=>{trips.splice(i,1);renderTrips();};box.appendChild(r);});sumKm();}
+function sumKm(){const t=trips.reduce((s,x)=>s+(+x.km||0),0);$("total").textContent=trips.length?"Total: "+t.toFixed(1)+" km":"";}
+$("addTrip").onclick=()=>{trips.push({from:"",to:"",km:"",min:"",fromC:null,toC:null});renderTrips();};
+async function calcTrips(list){const ok=list.filter(t=>t.from.trim()&&t.to.trim());
+if(!ok.length){$("noteMsg").textContent="Enter where you travelled from and to first.";return;}
+$("calc").disabled=true;$("noteMsg").textContent="Calculating distances…";
+try{const res=await fetch("/api/distance",{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({trips:ok.map(t=>({from:t.from,to:t.to,fromC:t.fromC||null,toC:t.toC||null}))})});
+const d=await res.json();if(!res.ok)throw new Error(d.error||"Server responded "+res.status);
+let bad=0;ok.forEach((t,i)=>{const r=d.trips[i]||{};if(r.km!=null){t.km=String(r.km);t.min=r.minutes!=null?String(r.minutes):"";}else bad++;});
+renderTrips();
+const src={ors:"OpenStreetMap routing",maps:"Google Maps",ai:"AI estimate"}[d.source]||"";
+$("noteMsg").textContent=d.limited?"The free routing limit was reached. Try again in a minute, or tomorrow.":
+bad===ok.length?"Couldn’t find these places. Pick an address from the dropdown, or use a full street address.":
+(bad?bad+" trip(s) couldn’t be found. Pick an address from the dropdown for those. ":"")+"Distances filled in ("+src+"). Check them before you claim.";
+}catch(e){$("noteMsg").textContent=e.message==="Failed to fetch"?"Could not reach the server.":e.message;}finally{$("calc").disabled=false;}}
+$("calc").onclick=()=>calcTrips(trips);
+
+/* ---------- Generate ---------- */
+// Local date (not UTC), so early-morning notes in Australia get the right day.
+const today=()=>{const d=new Date();return d.getFullYear()+"-"+String(d.getMonth()+1).padStart(2,"0")+"-"+String(d.getDate()).padStart(2,"0");};
+const convertMsg=$("convertMsg");
+function show(){renderForm();$("outPanel").style.display="block";$("outPanel").scrollIntoView({behavior:"smooth"});}
+$("manual").onclick=()=>{data={date:today()};check=new Set();na=new Set();trips=[];show();};
+async function convert(){
+const text=transcript.value.trim();convertMsg.className="msg";
+if(!text){convertMsg.textContent="Add or dictate some text first.";return;}
+if(listening)stopBtn.click();
+const T=typ();$("convert").disabled=$("reconvert").disabled=true;convertMsg.textContent="Drafting your record…";
+try{
+const schema=T.fields.map(f=>({key:f.k,label:f.l,type:f.t,required:!!f.req,options:f.o}));
+const res=await fetch("/api/convert",{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({transcript:text,recordType:T.title,schema,instructions:$("instructions").value.trim(),travel:!!T.travel,today:today()})});
+let d={};try{d=await res.json();}catch(_){}
+if(!res.ok)throw new Error(d.error||"Server responded "+res.status);
+data={};na=new Set();const put=(o)=>Object.entries(o||{}).forEach(([k,v])=>{if(v!==null&&v!==undefined&&String(v).trim()!=="")data[k]=String(v);});
+put(d.meta);put(d.fields);if(!data.date)data.date=today();
+check=new Set(d.check||[]);
+trips=(d.travel||[]).filter(t=>t.from&&t.to).map(t=>({from:t.from,to:t.to,km:"",min:"",fromC:null,toC:null}));
+show();convertMsg.textContent=trips.length?"Done. Review below, then calculate travel distances.":"Done. Review and fill in anything highlighted.";
+}catch(err){convertMsg.className="msg err";convertMsg.textContent=err.message==="Failed to fetch"?"Could not reach the server. Open http://localhost:3000 and make sure server.js is running.":err.message;}
+finally{$("convert").disabled=$("reconvert").disabled=false;}}
+$("convert").onclick=convert;
+$("reconvert").onclick=()=>{if(confirm("Generate again? This replaces your edits."))convert();};
+
+/* ---------- Export ---------- */
+const esc=s=>String(s??"").replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;").replace(/"/g,"&quot;");
+const fmtDT=v=>{const d=new Date(v);return isNaN(d)?v:d.toLocaleString("en-AU",{dateStyle:"medium",timeStyle:"short"});};
+const txt=f=>{const v=String(data[f.k]??"").trim();if(!v)return "";if(f.t==="score"&&v!==NA)return v+" / 10";if(f.t==="datetime")return fmtDT(v);return v;};
+const val=f=>{const t=txt(f);return t?esc(t).replace(/\n/g,"<br>"):`<i style="color:#b3261e">Not recorded</i>`;};
+function docHtml(){const T=typ();
+const meta=metaOf(T).map(m=>`<td style="padding:4pt 10pt 4pt 0;font-size:10pt"><span style="color:#666">${m.l}</span><br><b>${esc(data[m.k])||"—"}</b></td>`).join("");
+const secs=T.fields.map(f=>`<h2 style="font-size:11.5pt;color:${G};border-bottom:1.5px solid ${G};padding-bottom:2pt;margin:14pt 0 5pt">${f.l}</h2><p style="font-size:10.5pt;line-height:1.5;margin:3pt 0">${val(f)}</p>`).join("");
+let tr="";if(T.travel&&trips.length){const tot=trips.reduce((s,x)=>s+(+x.km||0),0);
+tr=`<h2 style="font-size:11.5pt;color:${G};border-bottom:1.5px solid ${G};padding-bottom:2pt;margin:14pt 0 5pt">Travel log</h2><table style="width:100%;border-collapse:collapse;font-size:10pt"><tr style="text-align:left"><th>From</th><th>To</th><th>km</th><th>min</th></tr>`+
+trips.map(t=>`<tr><td>${esc(t.from)}</td><td>${esc(t.to)}</td><td>${esc(t.km)||"—"}</td><td>${esc(t.min)||"—"}</td></tr>`).join("")+`<tr><td colspan="2"><b>Total</b></td><td><b>${tot.toFixed(1)}</b></td><td></td></tr></table><p style="font-size:8.5pt;color:#777">Distances are estimates.</p>`;}
+return `<div style="font-family:Calibri,Arial,sans-serif;color:#111"><div style="border-bottom:3px solid ${G};padding-bottom:6pt;margin-bottom:8pt"><span style="font-size:11pt;color:${G};font-weight:bold;letter-spacing:1pt">SHIFTSCRIBE</span><h1 style="font-size:20pt;margin:2pt 0 0">${T.title}</h1></div>
+<table style="width:100%;border-collapse:collapse"><tr>${meta}</tr></table>${secs}${tr}
+<p style="font-size:8.5pt;color:#777;margin-top:22pt;border-top:1px solid #ccc;padding-top:6pt">AI-assisted draft generated with ShiftScribe. Must be checked by the support worker before it is saved or submitted.</p></div>`;}
+const slug=()=>((data.participant||"participant").trim().replace(/\s+/g,"_"))+"_"+$("noteType").value+"_"+(data.date||today());
+const plain=()=>{const T=typ();return T.title+"\n"+metaOf(T).map(m=>m.l+": "+(data[m.k]||"—")).join("\n")+"\n\n"+
+T.fields.map(f=>f.l.toUpperCase()+"\n"+(txt(f)||"Not recorded")).join("\n\n")+
+(T.travel&&trips.length?"\n\nTRAVEL LOG\n"+trips.map(t=>`${t.from} to ${t.to}: ${t.km||"—"} km`).join("\n"):"");};
+$("copyNote").onclick=async()=>{try{await navigator.clipboard.writeText(plain());$("noteMsg").textContent="Copied.";}catch(_){$("noteMsg").textContent="Could not copy. Use the download buttons.";}};
+$("dlDoc").onclick=()=>{const html=`<html xmlns:o="urn:schemas-microsoft-com:office:office" xmlns:w="urn:schemas-microsoft-com:office:word"><head><meta charset="utf-8"><title>${typ().title}</title></head><body>${docHtml()}</body></html>`;
+const url=URL.createObjectURL(new Blob(["\ufeff"+html],{type:"application/msword"}));const a=document.createElement("a");a.href=url;a.download=slug()+".doc";a.click();setTimeout(()=>URL.revokeObjectURL(url),1000);$("noteMsg").textContent="Word download started.";};
+$("dlPdf").onclick=()=>{$("printDoc").innerHTML=docHtml();const old=document.title;document.title=slug();$("noteMsg").textContent="In the print window, set Destination to “Save as PDF”.";window.print();document.title=old;};
+
+renderSay();
+</script>
+</body>
+</html>
